@@ -1,0 +1,22 @@
+GET http://localhost:5000/users 
+
+### 
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "username": "wardhiyyah",
+    "email": "wardhiyyah@gmail.com"
+}
+
+###
+PATCH http://localhost:5000/users/641da5920de8d42a7b3af285
+Content-Type: application/json
+
+{
+    "username": "wrdhiyyah",
+    "email": "wardhiyyah.update@gmail.com"
+}
+
+###
+DELETE http://localhost:5000/users/641da5920de8d42a7b3af285
