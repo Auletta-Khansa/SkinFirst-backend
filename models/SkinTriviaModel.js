@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
 
-const User = mongoose.Schema({
-    username:{
+const SkinTrivia = mongoose.Schema({
+    image:{
         type: String,
         required: true
     },
-    email:{
+    name:{
         type: String,
         required: true
     },
-    password:{
-        type: String,
+    description:{
+        type: Array,
         required: true
     }
 });
 
-export default mongoose.model('Users', User)
+export default mongoose.model('SkinTrivia', SkinTrivia)

@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import UserRoute from "./routes/UserRoute.js";
+import SkinTriviasRoute from "./routes/SkinTriviasRoute.js";
 
 const app = express();
 mongoose.connect('mongodb://localhost:27017/skinfirst-db',{
@@ -15,5 +16,6 @@ db.once('open', () => console.log('Database Connected...'))
 app.use(cors()); 
 app.use(express.json());
 app.use(UserRoute);
+app.use(SkinTriviasRoute);
 
 app.listen(5000, ()=> console.log('Server is up and running...'));
