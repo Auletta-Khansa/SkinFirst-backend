@@ -1,8 +1,9 @@
 // import { Error } from "mongoose";
 import User from "../models/UserModel.js"
 import { validationResult } from "express-validator";
-// import {hashPassword, comparePassword} from "../helpers.auth"
 import {hashPassword, comparePassword} from "../helpers/auth.js"
+import jwt  from "jsonwebtoken";
+// import cookieParser from "cookie-parser";
 
 export const getUsers = async (req, res) => {
     try {
@@ -90,7 +91,6 @@ export const authLogin = async (req, res) => {
         const {username, email, password} = req.body;
         // Check user exist?
         const user = await User.findOne({ $or: [{ username}, { email}] });
-        console.log(user)
         if(!user){
             return res.json({
                 error: "Username or email is not registered!"
@@ -99,7 +99,10 @@ export const authLogin = async (req, res) => {
         // Check password match
         const matchPassword = await comparePassword(password, user.password);
         if(matchPassword){
-            res.json({message: `Login successful. Welcome, ${user.username}`})
+            jwt.sign({email: user.email, id: user._id, username: user.username}, process.env.JWT_SECRET, {}, (err, token) => {
+                if(err) throw err;
+                res.cookie('token', token).json({message: `Login successful. Welcome, ${user.username}`, user})
+            })
         }
         else{
             res.json({error: "Login failed. Invalid username or password."})
@@ -107,5 +110,19 @@ export const authLogin = async (req, res) => {
     } catch (error) {
         console.log(error)
         res.status(400).json({message: error.message})
+    }
+}
+
+export const getProfile = (req, res) =>{
+    const { token } = req.cookies
+    console.log("ini token: ", token)
+    if(token){
+        jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
+            if(err) throw err;
+            res.json({user})
+        })
+    }
+    else{
+        res.json(null)
     }
 }

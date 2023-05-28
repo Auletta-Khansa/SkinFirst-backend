@@ -6,7 +6,8 @@ import {
     addUser,
     updateUser,
     deleteUser,
-    authLogin
+    authLogin,
+    getProfile
 } from "../controllers/UserController.js";
 import {body} from "express-validator"
 
@@ -16,7 +17,7 @@ const router = express.Router();
 router.use(
     cors({
         credential: true,
-        origin: 'https://localhost:5173'
+        origin: 'https://localhost:3000'
     })
 )
 
@@ -29,5 +30,6 @@ router.post('/users',[
 router.patch('/users/:id', updateUser);
 router.delete('/users/:id', deleteUser);
 router.post('/login', authLogin);
+router.get('/profile', getProfile);
 
 export default router;
