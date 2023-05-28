@@ -1,4 +1,8 @@
 import SkinTrivia from "../models/SkinTriviaModel.js"
+import multer from "multer";
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 export const getTrivias = async (req, res) => {
     try {
@@ -18,15 +22,23 @@ export const getTriviaById = async (req, res) => {
     }
 }
 
-export const addTrivia = async (req, res) => {
-    const trivias = new SkinTrivia(req.body);
+export const createSkinTrivia = async (req, res) => {
     try {
-        const insertTrivias = await trivias.save();
-        res.status(201).json(insertTrivias);
+      const { name, description } = req.body;
+      const { originalname, buffer, mimetype } = req.file;
+      const image = {
+        data: buffer.toString('base64'),
+        contentType: mimetype,
+      };
+  
+      const newSkinTrivia = new SkinTrivia({ name, description, image });
+      await newSkinTrivia.save();
+  
+      res.status(201).json({ message: "Informations are successfully saved", newSkinTrivia});
     } catch (error) {
-        res.status(400).json({message: error.message})
+      res.status(500).json({ message: "There is an error occured", error: error.message });
     }
-}
+  };
 
 export const updateTrivia = async (req, res) => {
     try {
@@ -45,3 +57,4 @@ export const deleteTrivia = async (req, res) => {
         res.status(400).json({message: error.message})
     }
 }
+

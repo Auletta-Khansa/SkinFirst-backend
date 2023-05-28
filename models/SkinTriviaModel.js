@@ -1,10 +1,16 @@
 import mongoose from "mongoose";
 
 const SkinTrivia = mongoose.Schema({
-    image:{
-        type: String,
-        required: true
-    },
+    image: {
+        data: {
+          type: String,
+          required: true,
+        },
+        contentType: {
+          type: String,
+          required: true,
+        },
+      },
     name:{
         type: String,
         required: true
