@@ -3,8 +3,10 @@ import mongoose from "mongoose";
 import cors from "cors";
 import UserRoute from "./routes/UserRoute.js";
 import SkinTriviasRoute from "./routes/SkinTriviasRoute.js";
+import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 dotenv.config();
+
 
 
 
@@ -19,6 +21,10 @@ const db = mongoose.connection;
 db.on('error', (error) => console.log(error));
 db.once('open', () => console.log('Database Connected...'))
 
+// middleware
+app.use(cookieParser());
+app.use(express.urlencoded({extended: false}));
+
 app.use(cors()); 
 app.use(express.json());
 app.use(UserRoute);
@@ -30,6 +36,10 @@ app.use((error, req, res, next) => {
     const data = error.data;
     res.status(status).json({message: message, data: data})
 });
+
+
+// app.use('/', require('./routes/UserRoute'));
+app.use('/', UserRoute);
 
 const port = 5000;
 app.listen(port, ()=> console.log(`Server is up and running on port ${port}...`));
