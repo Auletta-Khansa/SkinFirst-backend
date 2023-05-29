@@ -126,3 +126,8 @@ export const getProfile = (req, res) =>{
         res.json(null)
     }
 }
+
+//logout endpoint
+export const authLogout = (req, res) => {
+    res.clearCookie('token').json({ message: 'Logout successful' });
+}
