@@ -7,7 +7,8 @@ import {
     updateUser,
     deleteUser,
     authLogin,
-    getProfile
+    getProfile,
+    authLogout
 } from "../controllers/UserController.js";
 import {body} from "express-validator"
 
@@ -30,6 +31,7 @@ router.post('/users',[
 router.patch('/users/:id', updateUser);
 router.delete('/users/:id', deleteUser);
 router.post('/login', authLogin);
+router.post('/logout', authLogout);
 router.get('/profile', getProfile);
 
 export default router;
