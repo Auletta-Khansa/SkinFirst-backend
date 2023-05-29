@@ -22,10 +22,14 @@ db.on('error', (error) => console.log(error));
 db.once('open', () => console.log('Database Connected...'))
 
 // middleware
+const API_Frontend = process.env.API_FRONTEND; 
 app.use(cookieParser());
 app.use(express.urlencoded({extended: false}));
 
-app.use(cors()); 
+app.use(cors({
+    origin: API_Frontend, 
+    credentials: true
+  }));
 app.use(express.json());
 app.use(UserRoute);
 app.use(SkinTriviasRoute);
