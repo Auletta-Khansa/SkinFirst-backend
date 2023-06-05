@@ -4,6 +4,7 @@ import cors from "cors";
 import UserRoute from "./routes/UserRoute.js";
 import SkinTriviasRoute from "./routes/SkinTriviasRoute.js";
 import DiseaseRoute from "./routes/DiseaseRoute.js";
+import HistoryRoute from "./routes/HistoryRoute.js";
 import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -35,6 +36,7 @@ app.use(express.json());
 app.use(UserRoute);
 app.use(SkinTriviasRoute);
 app.use(DiseaseRoute);
+app.use(HistoryRoute);
 
 app.use((error, req, res, next) => {
     const status = error.errorStatus || 500;
