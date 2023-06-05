@@ -5,6 +5,11 @@ const Disease = mongoose.Schema({
         type: String,
         required: true
     },
+    description:{
+        type: String,
+        default: "",
+        required: true
+    },
     treatments:{
         type: Array,
         required: true
