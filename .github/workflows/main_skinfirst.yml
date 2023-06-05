@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'SkinFirst'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D3C7D2F0888F464FBD2B2C4E088F3827 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3B23663D69E3446D8C81D8974375963B }}
