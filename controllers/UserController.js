@@ -28,7 +28,7 @@ export const addUser = async (req, res) => {
     const errors = validationResult(req);
 
     try {
-        const {username, email, password} = req.body;
+        const {username, email, password, role} = req.body;
         if(!errors.isEmpty()){
             return res.json({ error: "Invalid input character", data:errors.array() });
         }
@@ -47,20 +47,15 @@ export const addUser = async (req, res) => {
             }
         }
         const hashedPassword = await hashPassword(password);
-        // const insertUsers = await user.save();
         const insertUsers = await User.create({
             username,
             email,
             password: hashedPassword,
+            role
         })
         res.status(201).json({
             message: "User berhasil ditambahkan",
-            data: [
-                insertUsers._id,
-                insertUsers.username, 
-                insertUsers.email,
-                insertUsers.password
-            ]});
+            data: insertUsers});
         
     } catch (error) {
         console.error("errornya disini :", error.message);
@@ -69,19 +64,46 @@ export const addUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
-        const updateuser = await User.updateOne({_id:req.params.id}, {$set: req.body});
-        res.status(200).json(updateuser);
+      const { username, email, oldPassword, newPassword } = req.body;
+    
+      // Verifikasi old password
+      if (!oldPassword) {
+        return res.json({ error: "Please insert your old password" })  
+      }
+
+      const existingUser = await User.findById(req.params.id);
+      if (!existingUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      // Perbarui field yang diizinkan
+      existingUser.username = username || existingUser.username;
+      existingUser.email = email || existingUser.email;
+  
+      const isPasswordValid = await comparePassword(oldPassword, existingUser.password);
+        if (!isPasswordValid) {
+          return res.status(401).json({ error: 'Old password is not verified' });
+        }
+    
+      // Periksa jika newPassword ada dan lakukan hashing
+      if (newPassword) {
+        const hashedPassword = await hashPassword(newPassword);
+        existingUser.password = hashedPassword;
+      }
+  
+      const updatedUser = await existingUser.save();
+      res.status(200).json({ message: 'User profile successfully updated', user: updatedUser });
     } catch (error) {
-        res.status(400).json({message: error.message})
+      res.status(400).json({ error: error.message });
     }
-}
+  };
 
 export const deleteUser = async (req, res) => {
     try {
         const deleteuser = await User.deleteOne({_id:req.params.id});
         res.status(200).json(deleteuser);
     } catch (error) {
-        res.status(400).json({message: error.message})
+        res.status(400).json({error: error.message})
     }
 }
 
@@ -91,6 +113,7 @@ export const authLogin = async (req, res) => {
         const {username, email, password} = req.body;
         // Check user exist?
         const user = await User.findOne({ $or: [{ username}, { email}] });
+        console.log("USER", user)
         if(!user){
             return res.json({
                 error: "Username or email is not registered!"
@@ -99,7 +122,7 @@ export const authLogin = async (req, res) => {
         // Check password match
         const matchPassword = await comparePassword(password, user.password);
         if(matchPassword){
-            jwt.sign({email: user.email, id: user._id, username: user.username}, process.env.JWT_SECRET, {}, (err, token) => {
+            jwt.sign({email: user.email, id: user._id, username: user.username, role: user.role}, process.env.JWT_SECRET, {}, (err, token) => {
                 if(err) throw err;
                 res.cookie('token', token).json({message: `Login successful. Welcome, ${user.username}`, user})
             })
@@ -119,7 +142,7 @@ export const getProfile = (req, res) =>{
     if(token){
         jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
             if(err) throw err;
-            res.json({user})
+            res.json({user, token:token})
         })
     }
     else{
